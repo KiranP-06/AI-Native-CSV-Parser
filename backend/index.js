@@ -47,9 +47,10 @@ ${csvChunkString}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash", // using the fast flash model
+        model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.1
+        temperature: 0.1,
+        max_tokens: 4096
       })
     });
 
@@ -98,8 +99,8 @@ app.post("/api/validate", upload.single("file"), async (req, res) => {
     res.json({ jobId, message: "AI Processing started", total: records.length });
 
     // --- Background AI Processing ---
-    // We chunk into batches of 20 to prevent context explosion
-    const aiBatches = chunkArray(records, 20);
+    // We chunk into batches of 10 rows to prevent token limit issues
+    const aiBatches = chunkArray(records, 10);
     const allValidRecords = [];
 
     for (const batch of aiBatches) {
